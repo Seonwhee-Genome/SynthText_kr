@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt 
@@ -15,6 +17,7 @@ from pygame import freetype
 #import Image
 from PIL import Image
 import math
+
 from common import *
 
 # def is_korean(ch):
@@ -454,7 +457,7 @@ class FontState(object):
 
         # get the model to convert from pixel to font pt size:
         with open(font_model_path,'rb') as f:
-            self.font_model = cp.load(f)
+            self.font_model = cp.load(f, encoding='latin-1')
             
         # get the names of fonts to use:
         self.FONT_LIST = osp.join(data_dir, 'fonts/fontlist.txt')
@@ -545,10 +548,10 @@ class TextSource(object):
                       'LINE':self.sample_line,
                       'PARA':self.sample_para}
         self.txt = []
-        with open(fn,'r') as f:
+        with open(fn,'r', encoding='utf-8') as f:
             for l in f.readlines():
                 line=l.strip()
-                line=line.decode('utf-8')
+                #line=line.decode('utf-8')
                 # print(line)
                 self.txt.append(line)
 

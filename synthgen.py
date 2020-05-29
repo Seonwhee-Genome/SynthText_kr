@@ -1,5 +1,6 @@
 # Author: Ankush Gupta
 # Date: 2015
+# Modified in 2020 by Seonwhee Jin
 
 """
 Main script for synthetic text rendering.
@@ -205,6 +206,7 @@ def rescale_frontoparallel(p_fp,box_fp,p_im):
         s = 1.0
     return s
 
+
 def get_text_placement_mask(xyz,mask,plane,pad=2,viz=False):
     """
     Returns a binary mask in which text can be placed.
@@ -283,13 +285,14 @@ def get_text_placement_mask(xyz,mask,plane,pad=2,viz=False):
         plt.imshow(mask)
         plt.subplot(1,2,2)
         plt.imshow(~place_mask)
-        plt.hold(True)
+        ##plt.hold(True)
         for i in range(len(pts_fp_i32)):
             plt.scatter(pts_fp_i32[i][:,0],pts_fp_i32[i][:,1],
                         edgecolors='none',facecolor='g',alpha=0.5)
         plt.show()
 
     return place_mask,H,Hinv
+
 
 def viz_masks(fignum,rgb,seg,depth,label):
     """
@@ -327,6 +330,7 @@ def viz_masks(fignum,rgb,seg,depth,label):
         plt.imshow(ims[i])
     plt.show(block=False)
 
+    
 def viz_regions(img,xyz,seg,planes,labels):
     """
     img,depth,seg are images of the same size.
@@ -344,7 +348,8 @@ def viz_regions(img,xyz,seg,planes,labels):
     mym.view(180,180)
     mym.orientation_axes()
     mym.show(True)
- 
+    
+    
 def viz_textbb(fignum,text_im, bb_list,alpha=1.0):
     """
     text_im : image containing text
@@ -353,7 +358,7 @@ def viz_textbb(fignum,text_im, bb_list,alpha=1.0):
     plt.close(fignum)
     plt.figure(fignum)
     plt.imshow(text_im)
-    plt.hold(True)
+    ##plt.hold(True)
     H,W = text_im.shape[:2]
     for i in range(len(bb_list)):
         bbs = bb_list[i]
@@ -365,6 +370,7 @@ def viz_textbb(fignum,text_im, bb_list,alpha=1.0):
     plt.gca().set_xlim([0,W-1])
     plt.gca().set_ylim([H-1,0])
     plt.show(block=False)
+    
 
 class RendererV3(object):
 
@@ -557,15 +563,17 @@ class RendererV3(object):
         # save character and word files as text files
         # print(len(wrds))
 
-        f = open('char_text.txt', 'a')
-        f1 = open('word_text.txt', 'a')
+        f = open('char_text.txt', 'a', encoding='utf-8')
+        f1 = open('word_text.txt', 'a', encoding='utf-8')
         for i in range(len(wrds)):
             # f1.write(wrds[i].encode('utf-8'))
             # f.write('\n')
             for j in range(len(wrds[i])):
-                f1.write(wrds[i].encode('utf-8'))
+                #f1.write(wrds[i].encode('utf-8'))
+                f1.write(wrds[i])
                 f1.write('\n')
-                f.write(wrds[i][j].encode('utf-8'))
+                #f.write(wrds[i][j].encode('utf-8'))
+                f.write(wrds[i][j])
                 f.write('\n')
 
 
@@ -695,23 +703,24 @@ class RendererV3(object):
                     # update the region collision mask:
                     place_masks[ireg] = collision_mask
                     # store the result:
-                    itext.append(text)
+                    itext.append(text)                    
                     ibb.append(bb)
 
-            if  placed:
+            if placed: 
                 try:
-                    # at least 1 word was placed in this instance:
+                    # at least 1 word was placed in this instance:                    
                     idict['img'] = img
-                    idict['txt'] = itext
+                    idict['txt'] = itext                    
                     idict['charBB'] = np.concatenate(ibb, axis=2)
                     idict['wordBB'] = self.char2wordBB(idict['charBB'].copy(), ' '.join(itext))
-                    res.append(idict.copy())
+                    res.append(idict.copy())                    
                     if viz:
                         viz_textbb(1,img, [idict['wordBB']], alpha=1.0)
                         viz_masks(2,img,seg,depth,regions['label'])
                         # viz_regions(rgb.copy(),xyz,seg,regions['coeff'],regions['label'])
-                        if i < ninstance-1:
-                            raw_input(colorize(Color.BLUE,'continue?',True))
+#                         if i < ninstance-1:
+#                             input(colorize(Color.BLUE,'continue?',True))
                 except:
-                    print("THIS IS THE REASON WHY!!!!!")                 
+                    print("Unexpected error:", sys.exc_info()[0])                    
+                    print("THIS IS THE REASON WHY!!!!!")      
         return res

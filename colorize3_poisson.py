@@ -47,7 +47,7 @@ class FontColor(object):
 
     def __init__(self, col_file):
         with open(col_file,'rb') as f:
-            self.colorsRGB = cp.load(f)
+            self.colorsRGB = cp.load(f, encoding="latin-1")
             # u = pickle._Unpickler(f)
             # u.encoding = 'latin1'
             # p = u.load()
@@ -202,11 +202,13 @@ class Colorize(object):
         ref: https://en.wikipedia.org/wiki/Alpha_compositing
         ref: Chapter 7 (pg. 440 and pg. 444):
              http://partners.adobe.com/public/developer/en/pdf/PDFReference.pdf
-        """
+        """        
+        
         a_f = fore.alpha/255.0
         a_b = back.alpha/255.0
         c_f = fore.color
-        c_b = back.color
+        c_b = back.color       
+        
 
         a_r = a_f + a_b - a_f*a_b
         if blend_type != None:
@@ -228,7 +230,8 @@ class Colorize(object):
                  use None for plain alpha blending.
         Note    : (1) it assumes that all the layers are of the SAME SIZE.
         @return : a single LAYER type object representing the merged-down image
-        """
+        """        
+        
         nlayers = len(layers)
         if nlayers > 1:
             [n,m] = layers[0].alpha.shape[:2]
@@ -243,6 +246,7 @@ class Colorize(object):
             return layers[0]
 
     def resize_im(self, im, osize):
+        print("resize im!")
         return np.array(Image.fromarray(im).resize(osize[::-1], Image.BICUBIC))
         
     def occlude(self):

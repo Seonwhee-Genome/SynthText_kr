@@ -24,14 +24,16 @@ CONFIG_LOCAL = {'im_dir'   : 'bg_img',
                 'out_dir'  : 'gen',
                 'data_dir' : 'data'}
 
+
 def add_res_to_db(imgname, res, db):
     ninstance = len(res)
-    for i in xrange(ninstance):
+    for i in range(ninstance):
         dname = "%s_%d"%(imgname, i)
         db['data'].create_dataset(dname,data=res[i]['img'])
         db['data'][dname].attrs['charBB'] = res[i]['charBB']
         db['data'][dname].attrs['wordBB'] = res[i]['wordBB']
         db['data'][dname].attrs['txt'] = res[i]['txt']
+
 
 def main(viz=False):
     config = CONFIG_LOCAL
@@ -82,7 +84,7 @@ def main(viz=False):
             img = np.array(img.resize(sz,Image.ANTIALIAS))
             seg = np.array(Image.fromarray(seg).resize(sz,Image.NEAREST))
 
-            print colorize(Color.RED,'%d of %d'%(i,end_idx-1), bold=True)
+            print(colorize(Color.RED,'%d of %d'%(i,end_idx-1), bold=True))
             res = RV3.render_text(img,depth,seg,area,label,
                                   ninstance=INSTANCE_PER_IMAGE,viz=viz)
             if len(res) > 0:
